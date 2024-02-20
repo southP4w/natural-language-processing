@@ -1,40 +1,41 @@
-# v =   vocabulary                  =   set of all words in a language
+# v =   vocabulary  =   set of all word types in a language
 
+def normalize(corpora: iter):
+    """
+    u   =   word types:     the set of all unique words in the corpus (has no repeats)
+    n   =   word tokens:    the set of ALL words in the corpus (has repeats)
+    w   =   a single word token
+    f   =   the current `corpus` (text file) being normalized
+    c   =   the current line in `f`
+    p   =   normalized `c`
 
-def preprocess_data(training_corpus, testing_corpus):
-    u = {}
-    n = []
+    ** NOTE: This function assumes that the text file(s) in `corpora` has/have already been tokenized **
 
-    def handle_unknowns(tokens: list, types: dict, include_unknowns: bool):
-        if include_unknowns:
-            for i, phrase in enumerate(tokens):
-                tokens[i] = ['<unk>' if types[w] == 1 and w not in ('<s>', '</s>')
-                             else w for w in phrase
-                             ]
-        else:
-            for i, phrase in enumerate(tokens):
-                tokens[i] = ['' if types[w] == 1 and w not in ('<s>', '</s>')
-                             else w for w in phrase
-                             ]
+    Takes a list of one or more text files (corpora) and normalizes them:
+    All text becomes lower-case, and '<s>' and '</s>' are added as leading and trailing sentinels, respectively, to each line.
+    Each of the normalized text files in `corpora` are then written back to their respective files.
 
-    def normalize():
-        # u = {}  # dict for storing all unique words (types) in the corpus (no repeats)
-        with open(file=training_corpus, mode='r') as f:  # f = the current file being read from/written to
-            # n = []  # list for storing all preprocessed words (tokens) in the corpus (has repeats)
-            for c in f:  # c = current line (not processed);     For the current line in the file,
-                c = c.strip().lower()  # strip leading and trailing whitespace in `c` and make `c` all lowercase.
-                if not c.startswith('<s>'):  # If no leading '<s>' in this line,
-                    c = '<s> ' + c  # add it.
-                if not c.endswith('</s>'):  # If no trailing '</s>' in this line,
-                    c = c + ' </s>'  # add it.
-                p = c.split()  # p = preprocessed `c`
-                n.append(p)  # add the now preprocessed current line's tokens to `n`
-                for w in p:  # w = a single word;    For each word in the current processed line,
-                    u[w] = u.get(w, 0) + 1  # update the counts of each word in `p` in the list `n`.
-
-    normalize()
-    handle_unknowns(tokens=n, types=u, include_unknowns=True)
+    :param corpora: an iterable set of text files (corpora) to be normalized
+    :return: None
+    """
+    for corpus in corpora:
+        u = {}  # u: dict
+        with open(file=corpus, mode='r', encoding='utf-8') as f:  # read in
+            n = []  # n: list
+            for c in f:
+                c = c.strip().lower()
+                if not c.startswith('<s>'):
+                    c = '<s> ' + c
+                if not c.endswith('</s>'):
+                    c = c + ' </s>'
+                p = c.split()
+                n.append(p)
+                for w_ in p:
+                    u[w_] = u.get(w_, 0) + 1
+        with open(file=corpus, mode='w', encoding='utf-8') as f:  # write back
+            for w in n:
+                f.write(' '.join(w) + '\n')
 
 
 if __name__ == '__main__':
-    print()
+    normalize(['input_data/raw/test-Fall2023.txt', 'input_data/raw/train-Fall2023.txt'])
