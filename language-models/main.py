@@ -1,9 +1,11 @@
+from models.unigram_model import UnigramModel
+
+
 def normalize(corpora: iter):
     """
     T   =   the current corpus (text file) being normalized
     S   =   sentences:  the set of all sentences in the corpus
     s   =   sentence:   a single, non-normalized sentence
-    n   =   a single, normalized sentence s
     w   =   word:   a single word token
 
     ** NOTE: This function assumes that the text file(s) in `corpora` has/have already been tokenized **
@@ -24,8 +26,8 @@ def normalize(corpora: iter):
                     s = '<s> ' + s
                 if not s.endswith('</s>'):
                     s = s + ' </s>'
-                n = s.split()  # .split() returns a list of substrings (words) in `s`
-                S.append(n)
+                s = s.split()  # .split() returns a list of substrings (words) in `s`
+                S.append(s)
         corpus_processed = corpus.replace('raw', 'processed')
         with open(file=corpus_processed, mode='w', encoding='utf-8') as T:  # write to new file
             for w in S:
@@ -34,3 +36,7 @@ def normalize(corpora: iter):
 
 if __name__ == '__main__':
     normalize(['input_data/raw/train.txt', 'input_data/raw/test.txt'])
+    u = UnigramModel()
+    u.train('input_data/processed/train.txt')
+    # print(u.unigram_count())
+    # print(len(u.W))
