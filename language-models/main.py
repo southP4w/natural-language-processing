@@ -1,10 +1,11 @@
+from models.bigram_model import BigramModel
 from models.unigram_model import UnigramModel
 
 
 def normalize(corpora: iter):
     """
-    T   =   the current corpus (text file) being normalized
-    S   =   sentences:  the set of all sentences in the corpus
+    T   =   the current training_corpus (text file) being normalized
+    S   =   sentences:  the set of all sentences in the training_corpus
     s   =   sentence:   a single, non-normalized sentence
     w   =   word:   a single word token
 
@@ -38,5 +39,10 @@ if __name__ == '__main__':
     normalize(['input_data/raw/train.txt', 'input_data/raw/test.txt'])
     u = UnigramModel()
     u.train('input_data/processed/train.txt')
-    # print(u.unigram_count())
-    # print(len(u.W))
+    print(u.unigram_count())
+    print(u.token_count())
+    bg = BigramModel()
+    bgs = BigramModel()
+    bg.train()
+
+

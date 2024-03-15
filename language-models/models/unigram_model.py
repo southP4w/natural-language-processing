@@ -6,6 +6,7 @@ class UnigramModel:
     T   =   the corpus (text file)
     V   =   vocabulary: all word types in the corpus (no repeats)
     W   =   tokens: all word instances in the corpus (has repeats)
+    W_  =   temporary list for storing the words in the current sentence
     s   =   sentence: a single sentence
     w   =   word:   a single word token
     """
@@ -13,8 +14,8 @@ class UnigramModel:
         self.V = {}
         self.W = []
 
-    def train(self, corpus):
-        with open(file=corpus, mode='r', encoding='utf-8') as T:
+    def train(self, training_corpus):
+        with open(file=training_corpus, mode='r', encoding='utf-8') as T:
             for s in T:
                 W_ = []
                 for w in s.strip().split():
@@ -26,3 +27,6 @@ class UnigramModel:
 
     def unigram_count(self):
         return len(self.V)
+
+    def token_count(self):
+        return len(self.W)
