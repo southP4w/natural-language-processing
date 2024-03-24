@@ -58,7 +58,7 @@ def mark_singletons(normalized_corpus: iter):
             T.write(s + '\n')
 
 
-def missing_unigrams_ratio(test_corpus: iter, unigrams: dict):
+def missing_unigrams_ratio(test_corpus: iter, unigrams: dict) -> str:
     missing_unigrams = 0
     total_unigrams = 0
     with open(file=test_corpus, mode='r', encoding='utf-8') as T:
@@ -72,7 +72,7 @@ def missing_unigrams_ratio(test_corpus: iter, unigrams: dict):
     return '%.4f' % (missing_unigrams / total_unigrams * 100)
 
 
-def missing_uni_token_ratio(test_corpus: iter, unigrams: dict):
+def missing_uni_token_ratio(test_corpus: iter, unigrams: dict) -> str:
     missing_tokens = 0
     total_tokens = 0
     with open(file=test_corpus, mode='r', encoding='utf-8') as T:
@@ -86,24 +86,10 @@ def missing_uni_token_ratio(test_corpus: iter, unigrams: dict):
     return '%.4f' % (missing_tokens / total_tokens * 100)
 
 
-# def missing_bigrams_ratio(test_corpus: iter, bigrams: dict):
-#     missing_bigrams = 0
-#     total_bigrams = 0
-#     with open(test_corpus, "r", encoding="utf-8") as T:
-#         for s in T:
-#             W = s.split()
-#             for i in range(len(W) - 1):
-#                 total_bigrams += 1
-#                 bigram = (W[i], W[i + 1])
-#                 if bigram not in bigrams:  # if bigram word token of test corpus is not found in training corpus bigram word dictionary
-#                     missing_bigrams += 1  # increments every time a missing bigram types is found
-#     return '%.4f' % (missing_bigrams / total_bigrams * 100)
-
-
-def missing_bigrams_ratio(test_corpus: iter, bigrams: dict):
+def missing_bigrams_ratio(test_corpus: iter, bigrams: dict) -> str:
     missing_bigrams = 0
     total_bigrams = 0
-    with open(test_corpus, 'r', encoding='utf-8') as T:
+    with open(file=test_corpus, mode='r', encoding='utf-8') as T:
         for s in T:
             W = s.split()
             for i in range(len(W) - 1):
@@ -115,10 +101,10 @@ def missing_bigrams_ratio(test_corpus: iter, bigrams: dict):
     return '%.4f' % (missing_bigrams / total_bigrams * 100)
 
 
-def missing_bi_token_ratio(test_corpus: iter, bigrams: iter):
+def missing_bi_token_ratio(test_corpus: iter, bigrams: iter) -> str:
     missing_bigrams = 0
     total_bigrams = 0
-    with open(test_corpus, 'r', encoding='utf-8') as T:
+    with open(file=test_corpus, mode='r', encoding='utf-8') as T:
         for s in T:
             W = s.split()
             for i in range(len(W) - 1):
@@ -144,14 +130,18 @@ if __name__ == '__main__':
     uni_marked_training = UnigramModel()
     uni_marked_testing = UnigramModel()
 
+    junk_bigram = BigramModel()
+
     uni_unmarked_training.train('input_data/processed/train.txt')  # train the designated unigram model on the normalized corpus with no `<unk>` tokens
     uni_unmarked_testing.train('input_data/processed/test.txt')
     # uni_unmarked_garbage.train('input_data/processed/garbage.txt')
 
-    training_vocab_size_unmarked = uni_unmarked_training.unigram_count()
-    training_token_count_unmarked = uni_unmarked_training.token_count()
-    testing_vocab_size_unmarked = uni_unmarked_testing.unigram_count()
-    testing_token_count_unmarked = uni_unmarked_testing.token_count()
+    junk_bigram.train('input_data/processed/train.txt')
+
+    training_vocab_size_unmarked = uni_unmarked_training.get_unigram_count()
+    training_token_count_unmarked = uni_unmarked_training.get_token_count()
+    testing_vocab_size_unmarked = uni_unmarked_testing.get_unigram_count()
+    testing_token_count_unmarked = uni_unmarked_testing.get_token_count()
     # garbage_vocab_size_unmarked = uni_unmarked_garbage.unigram_count()
     # garbage_token_count_unmarked = uni_unmarked_garbage.token_count()
 
@@ -166,11 +156,11 @@ if __name__ == '__main__':
     print("\nQuestion 1: How many word types (unique words) are there in the training corpus? Include `<unk>` and `</s>`. Do not include `<s>`.")
     mark_singletons('input_data/processed/train.txt')
     uni_marked_training.train('input_data/processed/train.txt')
-    training_vocab_size_marked = uni_marked_training.unigram_count()
+    training_vocab_size_marked = uni_marked_training.get_unigram_count()
     print("Vocabulary size (after marking singletons):", training_vocab_size_marked)
 
     print("\nQuestion 2: How many word tokens are there in the training corpus? Do not include `<s>`.")
-    print("Total word tokens (after marking singletons):", uni_marked_training.token_count())
+    print("Total word tokens (after marking singletons):", uni_marked_training.get_token_count())
 
     print("\nQuestion 3:")
     print("What percentage of word tokens and word types in the test corpus did not occur in "
@@ -212,3 +202,10 @@ if __name__ == '__main__':
     print(f"Unigram: {uni_marked_training.compute_perplexity_of_sentence("I look forward to hearing your reply .")}")
     print(f"Bigram: {bi_marked_training.compute_perplexity_of_sentence("I look forward to hearing your reply .")}")
     print(f"Bigram (smoothed): {bi_marked_training.compute_perplexity_smoothed_of_sentence("I look forward to hearing your reply .")}")
+
+    print("\nQuestion 7:")
+    print("Compute the perplexity of the entire test corpus under each of the models.")
+    print("Dicsuss the differences in the results obtained.")
+    print(f"Unigram: {uni_marked_training.compute_perplexity_of_corpus('input_data/processed/test.txt')}")
+    print(f"Bigram: {bi_marked_training.compute_perplexity_of_corpus('input_data/processed/test.txt')}")
+    print(f"Bigram: {bi_marked_training.compute_perplexity_smoothed_of_corpus('input_data/processed/test.txt')}")

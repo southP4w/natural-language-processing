@@ -1,0 +1,141 @@
+Before marking singletons:
+'train.txt' vocabulary size: 83044
+'train.txt' total word tokens: 2468210
+'test.txt' vocabulary size: 1248
+'test.txt' total word tokens: 2769
+
+Question 1: How many word types (unique words) are there in the training corpus? Include `<unk>` and `</s>`. Do not include `<s>`.
+Vocabulary size (after marking singletons): 41738
+
+Question 2: How many word tokens are there in the training corpus? Do not include `<s>`.
+Total word tokens (after marking singletons): 2468210
+
+Question 3:
+What percentage of word tokens and word types in the test corpus did not occur in training (before mapping the unknown words to `<unk>` in training and test data)?
+Include `</s>` in your calculations. Do not include `<s>`.
+Original 'train.txt' vocabulary size = 83044
+Marked `<unk>`'s vocabulary size = 41738
+Ratio (unigram types): 3.6114
+Ratio (unigram tokens): 1.6612
+
+Question 4:
+Now replace singletons in the training data with `<unk>` symbol and map words (in the test corpus) not observed in training to `<unk>`.)
+What percentage of bigrams (bigram types and bigram tokens) in the test corpus did not occur in training (treat `<unk>` as a regular token that has been observed).
+Include `</s>`. Do not include `<s>`.
+Ratio (bigram types): 30.1192
+Ratio (bigram tokens): 27.5009
+
+Question 5:
+Compute the log probability of the sentence 'I look forward to hearing your reply .' under the three models.
+(Ignore capitalization and pad each sentence as described above).
+Please list all of the parameters required to compute the probabilities and show the complete calculation.
+Which of the parameters have zero values under each model?
+Use log_2 in your calculations.
+Map words not observed in training to the `<unk>` token.
+
+UNIGRAM:
+Unigram: (<unk>)
+	RAW Probability: 1.6736%
+	log_2 Probability: -5.9009%
+Unigram: (i)
+	RAW Probability: 0.2973%
+	log_2 Probability: -8.3937%
+Unigram: (look)
+	RAW Probability: 0.0248%
+	log_2 Probability: -11.9753%
+Unigram: (forward)
+	RAW Probability: 0.0192%
+	log_2 Probability: -12.3463%
+Unigram: (to)
+	RAW Probability: 2.1492%
+	log_2 Probability: -5.5400%
+Unigram: (hearing)
+	RAW Probability: 0.0085%
+	log_2 Probability: -13.5277%
+Unigram: (your)
+	RAW Probability: 0.0493%
+	log_2 Probability: -10.9859%
+Unigram: (reply)
+	RAW Probability: 0.0005%
+	log_2 Probability: -17.5346%
+Unigram: (.)
+	RAW Probability: 3.5610%
+	log_2 Probability: -4.8116%
+Unigram: (</s>)
+	RAW Probability: 4.0515%
+	log_2 Probability: -4.6254%
+
+Total (Unigram): -95.64134362207469
+
+BIGRAM:
+Bigram: (i| <unk>),
+	Raw Probability: 0.0291%
+	log_2 Probability: -11.7491%
+Bigram: (look| i),
+	Raw Probability: 0.2044%
+	log_2 Probability: -8.9345%
+Bigram: (forward| look),
+	Raw Probability: 5.5465%
+	log_2 Probability: -4.1723%
+Bigram: (to| forward),
+	Raw Probability: 21.0970%
+	log_2 Probability: -2.2449%
+Bigram: (hearing| to),
+	Raw Probability: 0.0113%
+	log_2 Probability: -13.1100%
+BIGRAM: (<unk>| hearing)
+	RAW PROBABILITY: 0.0 ZERO
+Bigram: (<unk>| your),
+	Raw Probability: 1.8077%
+	log_2 Probability: -5.7897%
+BIGRAM: (<unk>| reply)
+	RAW PROBABILITY: 0.0 ZERO
+Bigram: (</s>| .),
+	Raw Probability: 94.3045%
+	log_2 Probability: -0.0846%
+
+Total (Bigram): -46.08511233713066
+
+BIGRAM (SMOOTHED):
+Bigram: (i| <unk>)
+	Smoothed Probability: 0.0157%
+	Smoothed log_2 Probability: -12.6411%
+Bigram: (look| i)
+	Smoothed Probability: 0.0326%
+	Smoothed log_2 Probability: -11.5827%
+Bigram: (forward| look)
+	Smoothed Probability: 0.0826%
+	Smoothed log_2 Probability: -10.2408%
+Bigram: (to| forward)
+	Smoothed Probability: 0.2393%
+	Smoothed log_2 Probability: -8.7071%
+Bigram: (hearing| to)
+	Smoothed Probability: 0.0074%
+	Smoothed log_2 Probability: -13.7250%
+Bigram: (<unk>| hearing)
+	Smoothed Probability: 0.0024%
+	Smoothed log_2 Probability: -15.3562%
+Bigram: (<unk>| your)
+	Smoothed Probability: 0.0535%
+	Smoothed log_2 Probability: -10.8669%
+Bigram: (<unk>| reply)
+	Smoothed Probability: 0.0024%
+	Smoothed log_2 Probability: -15.3495%
+Bigram: (</s>| .)
+	Smoothed Probability: 63.9423%
+	Smoothed log_2 Probability: -0.6452%
+
+Total (Smoothed Bigram): -99.11464141259648
+
+Question 6:
+Compute the perplexity of 'I look forward to hearing your reply .' under each of the models.
+Unigram: 756.9920623085402
+Bigram: UNDEFINED! There exists a bigram tuple with a 0 value (cannot divide by zero)!
+Bigram (smoothed): 658.8564401431914
+
+Question 7:
+Compute the perplexity of the entire test corpus under each of the models.
+Dicsuss the differences in the results obtained.
+Unigram: 802.0839563494246
+Bigram: UNDEFINED! There exists a bigram tuple with a 0 value (cannot divide by zero)!
+Bigram: 1357.0366087733726
