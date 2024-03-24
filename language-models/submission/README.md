@@ -8,6 +8,10 @@ The answers to the questions will output to the console, and they are formatted 
 
 The Github repository for this assignment can be <a href="https://github.com/southP4w/natural-language-processing">found here</a>.
 
-### Libraries/Packages/venv
+## Libraries/Packages/venv
 
 There were no third-party libraries or virtual environments used for this assignment. The program uses nothing but the standard Python library in Python v<strong>3.12</strong>.
+
+## Additional Notes
+
+A goal of mine while doing this project was to stick as closely as possible (within reason given Python's syntax) to Jurafsky & Martin's 3rd Edition draft of The Speech and Language Processing textbook. Some of the notation may vary slightly, but overall it conforms to the mathematical notation used in the (draft) book.
