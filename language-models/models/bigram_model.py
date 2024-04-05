@@ -43,7 +43,6 @@ class BigramModel:
 
     def compute_probability_smoothed(self, sentence: iter) -> float:
         s = ["<s>"] + sentence.strip().lower().split() + ["</s>"]
-        # s = ["<s>"] + sentence.strip().lower().split() + ["</s>"]
         log_2_p = 0
         for i in range(len(s) - 1):
             w_0, w_1 = s[i], s[i + 1]
