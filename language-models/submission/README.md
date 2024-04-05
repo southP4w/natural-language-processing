@@ -10,7 +10,7 @@ The Github repository for this assignment can be <a href="https://github.com/sou
 
 ## Libraries/Packages/venv
 
-There were no third-party libraries or virtual environments used for this assignment. The program uses nothing but the standard Python library in Python v<strong>3.12</strong>.
+There were no third-party libraries used for this assignment. The program uses nothing but the standard Python library in Python v<strong>3.12</strong>.
 
 ## Additional Notes
 
