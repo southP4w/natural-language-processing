@@ -3,6 +3,7 @@
 from transformers import AutoTokenizer, TFAutoModelForSequenceClassification
 from datasets import load_dataset
 import tensorflow.python.keras.utils.np_utils as tf
+from tensorflow.data import Dataset
 import numpy as np
 import functions as f
 
@@ -58,4 +59,18 @@ train_labels = tf.to_categorical(tokenized_dataset["train"]["label"])
 val_labels = tf.to_categorical(tokenized_dataset["validation"]["label"])
 test_labels = tf.to_categorical(tokenized_dataset["test"]["label"])
 
-print(train_labels[:5])
+# print(train_labels[:5])
+
+# Creating TF Datasets for each of our data splits
+train_dataset = Dataset.from_tensor_slices((train_features, train_labels))
+val_dataset = Dataset.from_tensor_slices((val_features, val_labels))
+test_dataset = Dataset.from_tensor_slices((test_features, test_labels))
+
+# Shuffling and batching our data
+train_dataset = train_dataset.shuffle(len(train_features), seed=2).batch(8)
+val_dataset = val_dataset.shuffle(len(train_features), seed=2).batch(8)
+test_dataset = test_dataset.shuffle(len(train_features), seed=2).batch(8)
+
+# model.summary()
+model.layers[0].trainable = False
+model.summary()
