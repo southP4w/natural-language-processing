@@ -2,8 +2,7 @@
 
 from transformers import AutoTokenizer, TFAutoModelForSequenceClassification
 from datasets import load_dataset
-import torch
-import tensorflow as tf
+import tensorflow.python.keras.utils.np_utils as tf
 import numpy as np
 import functions as f
 
@@ -52,4 +51,11 @@ train_features = {x: train_features[x] for x in tokenizer.model_input_names}
 val_features = {x: val_features[x] for x in tokenizer.model_input_names}
 test_features = {x: test_features[x] for x in tokenizer.model_input_names}
 
-print(tokenizer.model_input_names)
+# print(tokenizer.model_input_names)
+# print(train_features)
+
+train_labels = tf.to_categorical(tokenized_dataset["train"]["label"])
+val_labels = tf.to_categorical(tokenized_dataset["validation"]["label"])
+test_labels = tf.to_categorical(tokenized_dataset["test"]["label"])
+
+print(train_labels[:5])
