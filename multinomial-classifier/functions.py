@@ -1,4 +1,3 @@
-
 def find_max_length(dataset):
     return len(max(dataset, key=lambda x: len(x.split())).split())
 

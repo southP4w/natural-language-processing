@@ -1,0 +1,126 @@
+Model: "tf_distil_bert_for_sequence_classification"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #
+=================================================================
+ distilbert (TFDistilBertMa  multiple                  66362880
+ inLayer)
+
+ pre_classifier (Dense)      multiple                  590592
+
+ classifier (Dense)          multiple                  3076
+
+ dropout_19 (Dropout)        multiple                  0 (unused)
+
+=================================================================
+Total params: 66956548 (255.42 MB)
+Trainable params: 593668 (2.26 MB)
+Non-trainable params: 66362880 (253.15 MB)
+_________________________________________________________________
+
+Epoch 1: LearningRateScheduler setting learning rate to 0.0010000000474974513.
+Epoch 1/15
+WARNING:tensorflow:AutoGraph could not transform <function infer_framework at 0x****************> and will run it as-is.
+Cause: for/else statement not yet supported
+To silence this warning, decorate the function with @tf.autograph.experimental.do_not_convert
+WARNING:tensorflow:From C:\********\directives.py:126: The name tf.nn.fused_batch_norm is deprecated. Please use tf.compat.v1.nn.fused_batch_norm instead.
+
+WARNING:tensorflow:From C:\********\directives.py:126: The name tf.ragged.RaggedTensorValue is deprecated. Please use tf.compat.v1.ragged.RaggedTensorValue instead.
+
+408/408 [==============================] - 32s 46ms/step - loss: 0.9842 - categorical_accuracy: 0.5972 - val_loss: 0.8603 - val_categorical_accuracy: 0.6310 - lr: 0.0010
+
+Epoch 2: LearningRateScheduler setting learning rate to 0.0010000000474974513.
+Epoch 2/15
+408/408 [==============================] - 17s 41ms/step - loss: 0.8238 - categorical_accuracy: 0.6761 - val_loss: 0.8480 - val_categorical_accuracy: 0.6551 - lr: 0.0010
+
+Epoch 3: LearningRateScheduler setting learning rate to 0.0010000000474974513.
+Epoch 3/15
+408/408 [==============================] - 17s 42ms/step - loss: 0.8016 - categorical_accuracy: 0.6822 - val_loss: 0.8589 - val_categorical_accuracy: 0.6417 - lr: 0.0010
+
+Epoch 4: LearningRateScheduler setting learning rate to 0.0010000000474974513.
+Epoch 4/15
+408/408 [==============================] - 17s 41ms/step - loss: 0.7749 - categorical_accuracy: 0.6930 - val_loss: 0.8565 - val_categorical_accuracy: 0.6337 - lr: 0.0010
+
+Epoch 5: LearningRateScheduler setting learning rate to 0.0010000000474974513.
+Epoch 5/15
+408/408 [==============================] - 17s 41ms/step - loss: 0.7575 - categorical_accuracy: 0.7040 - val_loss: 0.8231 - val_categorical_accuracy: 0.6444 - lr: 0.0010
+
+Epoch 6: LearningRateScheduler setting learning rate to 0.0010000000474974513.
+Epoch 6/15
+408/408 [==============================] - 17s 42ms/step - loss: 0.7360 - categorical_accuracy: 0.7169 - val_loss: 0.8255 - val_categorical_accuracy: 0.6364 - lr: 0.0010
+
+Epoch 7: LearningRateScheduler setting learning rate to 0.0010000000474974513.
+Epoch 7/15
+408/408 [==============================] - 17s 41ms/step - loss: 0.7252 - categorical_accuracy: 0.7203 - val_loss: 0.8107 - val_categorical_accuracy: 0.6604 - lr: 0.0010
+
+Epoch 8: LearningRateScheduler setting learning rate to 0.0010000000474974513.
+Epoch 8/15
+408/408 [==============================] - 17s 43ms/step - loss: 0.7090 - categorical_accuracy: 0.7160 - val_loss: 0.8271 - val_categorical_accuracy: 0.6444 - lr: 0.0010
+
+Epoch 9: LearningRateScheduler setting learning rate to 0.0010000000474974513.
+Epoch 9/15
+408/408 [==============================] - 17s 42ms/step - loss: 0.6945 - categorical_accuracy: 0.7261 - val_loss: 0.8344 - val_categorical_accuracy: 0.6524 - lr: 0.0010
+
+Epoch 10: LearningRateScheduler setting learning rate to 0.0010000000474974513.
+Epoch 10/15
+408/408 [==============================] - 17s 41ms/step - loss: 0.6943 - categorical_accuracy: 0.7307 - val_loss: 0.8349 - val_categorical_accuracy: 0.6257 - lr: 0.0010
+
+Epoch 11: LearningRateScheduler setting learning rate to 0.0003678794586447782.
+Epoch 11/15
+408/408 [==============================] - 17s 41ms/step - loss: 0.6462 - categorical_accuracy: 0.7470 - val_loss: 0.8065 - val_categorical_accuracy: 0.6684 - lr: 3.6788e-04
+
+Epoch 12: LearningRateScheduler setting learning rate to 0.00012245643455377955.
+Epoch 12/15
+408/408 [==============================] - 17s 41ms/step - loss: 0.6256 - categorical_accuracy: 0.7531 - val_loss: 0.7944 - val_categorical_accuracy: 0.6765 - lr: 1.2246e-04
+
+Epoch 13: LearningRateScheduler setting learning rate to 3.688316883663751e-05.
+Epoch 13/15
+408/408 [==============================] - 17s 41ms/step - loss: 0.6162 - categorical_accuracy: 0.7559 - val_loss: 0.7916 - val_categorical_accuracy: 0.6818 - lr: 3.6883e-05
+
+Epoch 14: LearningRateScheduler setting learning rate to 1.0051835886692629e-05.
+Epoch 14/15
+408/408 [==============================] - 17s 40ms/step - loss: 0.6048 - categorical_accuracy: 0.7627 - val_loss: 0.7916 - val_categorical_accuracy: 0.6791 - lr: 1.0052e-05
+
+Epoch 15: LearningRateScheduler setting learning rate to 2.4787521134827945e-06.
+Epoch 15/15
+408/408 [==============================] - 17s 41ms/step - loss: 0.6032 - categorical_accuracy: 0.7710 - val_loss: 0.7919 - val_categorical_accuracy: 0.6818 - lr: 2.4788e-06
+178/178 [==============================] - 6s 36ms/step - loss: 0.6961 - categorical_accuracy: 0.7319
+45/45 [==============================] - 6s 95ms/step
+TFSequenceClassifierOutput(loss=None, logits=array([[-1.6323591 , -4.123204  , -0.31528538,  3.6952627 ],
+       [ 1.3995696 , -1.2357438 , -0.40509355, -0.4999292 ],
+       [-1.2925652 , -1.4157534 , -5.420571  ,  4.3415003 ],
+       ...,
+       [ 0.4816908 , -1.7753928 , -2.3105707 ,  1.8817997 ],
+       [ 3.3859575 , -2.3173516 , -2.824771  , -0.50518876],
+       [-3.1245837 ,  3.4567053 , -0.7615377 , -1.1371894 ]],
+      dtype=float32), hidden_states=None, attentions=None)
+(array([[-1.6323591 , -4.123204  , -0.31528538,  3.6952627 ],
+       [ 1.3995696 , -1.2357438 , -0.40509355, -0.4999292 ],
+       [-1.2925652 , -1.4157534 , -5.420571  ,  4.3415003 ],
+       ...,
+       [ 0.4816908 , -1.7753928 , -2.3105707 ,  1.8817997 ],
+       [ 3.3859575 , -2.3173516 , -2.824771  , -0.50518876],
+       [-3.1245837 ,  3.4567053 , -0.7615377 , -1.1371894 ]],
+      dtype=float32),)
+Tweet: [CLS] @ user interesting choice of words... are you confirming that governments fund # terrorism? bit of an open door, but still... [SEP] [PAD] [PAD] [PAD] [PAD] [PAD]
+Predicted class: anger
+
+Tweet: [CLS] my visit to hospital for care triggered # trauma from accident 20 + yrs ago and image of my dead brother in it. feeling symptoms of # depression [SEP] [PAD] [PAD] [PAD] [PAD]
+Predicted class: sadness
+
+Tweet: [CLS] @ user welcome to # mpsvt! we are delighted to have you! # grateful # mpsvt # relationships [SEP] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD]
+Predicted class: joy
+
+Tweet: [CLS] what makes you feel # joyful? [SEP] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD]
+Predicted class: sadness
+
+Tweet: [CLS] # deppression is real. partners w / # depressed people truly dont understand the depth in which they affect us. add in # anxiety & amp ; makes [SEP]
+Predicted class: sadness
+
+Tweet: [CLS] i am revolting. [SEP] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD]
+Predicted class: anger
+
+Tweet: [CLS] rin might ever appeared gloomy but to be a melodramatic person was not her thing. \ n \ nbut honestly, she missed her old friend [SEP]
+Predicted class: sadness
+
+Tweet: [CLS] in need of a change! # restless [SEP] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD] [PAD]
+Predicted class: sadness
