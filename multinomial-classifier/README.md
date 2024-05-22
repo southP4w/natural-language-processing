@@ -1,3 +1,5 @@
+<img src="./Southp4w/bert-base-tweet_eval/logs/plot.png" width="275px" height="125px">
+
 # Using HuggingFace Framework's `tweet_eval` Dataset for Multinomial Classification
 
 <strong><a href="https://kedion.medium.com/fine-tuning-nlp-models-with-hugging-face-f92d55949b66">Click Here for the Source Tutorial that I followed</a></strong>
@@ -1157,7 +1159,7 @@ TFSequenceClassifierOutput(loss=None, logits=array([[-1.6323591 , -4.123204  , -
        [ 3.3859575 , -2.3173516 , -2.824771  , -0.50518876],
        [-3.1245837 ,  3.4567053 , -0.7615377 , -1.1371894 ]],
       dtype=float32), hidden_states=None, attentions=None)
-(array([[-1.6323591 , -4.123204  , -0.31528538,  3.6952627 ],
+(array([[-1.6323591 , -4.123204 , -0.31528538,  3.6952627 ],
        [ 1.3995696 , -1.2357438 , -0.40509355, -0.4999292 ],
        [-1.2925652 , -1.4157534 , -5.420571  ,  4.3415003 ],
        ...,
@@ -1191,3 +1193,6 @@ Predicted class: sadness
 ```
 
 ### As mentioned previously, we can clearly see that the model is overfitted since the results of training are significantly better than those of testing/validation.
+
+Results (using **MatPlotLib**)
+<img src="./Southp4w/bert-base-tweet_eval/logs/plot.png">
