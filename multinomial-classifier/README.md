@@ -286,15 +286,6 @@
   ```
 
   <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
   <hr>
   Let's regroup once more to see what our code looks like:
 
