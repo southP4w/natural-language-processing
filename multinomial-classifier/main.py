@@ -1,115 +1,156 @@
-import tensorflow as tf
-from tensorflow.data import Dataset
-from transformers import AutoTokenizer, TFAutoModelForSequenceClassification
+import torch
+from torch.utils.data import DataLoader
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from datasets import load_dataset
-import numpy as np
 import functions as f
-import matplotlib.pyplot as plt
+from torch.optim.lr_scheduler import LambdaLR  # learning rate scheduler
 
-# Load the dataset and model
+
+def tokenize_dataset(dataset):
+    """
+    Tokenize a dataset and return a tokenized version of the dataset.
+    :param dataset: Dataset to be tokenized.
+    :return: tokenized version of the passed dataset
+    """
+    return tokenizer(dataset['text'], padding='max_length', truncation=True, max_length=num_words)
+
+
+def logits_to_class_names(logits):
+    """
+    Convert logits to class names
+    :param logits: the logits to be converted
+    :return: the converted class names
+    """
+    predictions = torch.nn.functional.softmax(logits, dim=-1)  # apply softmax to logits
+    predictions = torch.argmax(predictions, dim=1).cpu().numpy()  # get the index of the largest value
+    return [category_names[pred] for pred in predictions]  # class names corresponding to the predictions
+
+
+def evaluate(model, dataloader, device):
+    """
+    Evaluate the model on a given dataloader
+    :param model: The model to be evaluated.
+    :param dataloader: The dataloader for evaluation.
+    :param device: The device to run the evaluation on.
+    :return: The average loss and accuracy of the evaluation.
+    """
+    model.eval()  # set the model to evaluation mode
+    total_loss = 0
+    correct_predictions = 0
+    total_predictions = 0
+    with torch.no_grad():  # disable gradient calculation
+        for batch in dataloader:
+            b_input_ids, b_input_mask, b_labels = [x.to(device) for x in batch]  # move the batch to the device
+            outputs = model(input_ids=b_input_ids, attention_mask=b_input_mask, labels=b_labels)
+            loss = outputs.loss
+            total_loss += loss.item()  # accumulate the total loss
+            logits = outputs.logits
+            predictions = torch.argmax(logits, dim=-1)
+            correct_predictions += (predictions == b_labels).sum().item()  # accumulate the correct predictions
+            total_predictions += b_labels.size(0)  # accumulate the total predictions
+    avg_loss = total_loss / len(dataloader)
+    accuracy = correct_predictions / total_predictions
+    return avg_loss, accuracy
+
+
 tweet_dataset = load_dataset(path='tweet_eval', name='emotion')
 tokenizer = AutoTokenizer.from_pretrained('distilbert-base-uncased')
-model = TFAutoModelForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=4)
+model = AutoModelForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=4)
 
-category_names = {0: "anger", 1: "joy", 2: "optimism", 3: "sadness"}
+category_names = {0: 'anger', 1: 'joy', 2: 'optimism', 3: 'sadness'}
 
-# Calculate maximum lengths
-train_max_length = f.find_max_length(tweet_dataset["train"]["text"])
-val_max_length = f.find_max_length(tweet_dataset["validation"]["text"])
-test_max_length = f.find_max_length(tweet_dataset["test"]["text"])
+# Find the max length of each text:
+train_max_length = f.find_max_length(tweet_dataset['train']['text'])
+val_max_length = f.find_max_length(tweet_dataset['validation']['text'])
+test_max_length = f.find_max_length(tweet_dataset['test']['text'])
 
-num_words = 36
+num_words = max(train_max_length, val_max_length, test_max_length)  # dynamically get length of longest word sequence
+# num_words = 36  # length of longest word sequence (this was originally pre-determined)
 filtered_dataset = f.filter_dataset(tweet_dataset, num_words)
+tokenized_dataset = filtered_dataset.map(tokenize_dataset, batched=True)
 
+# convert each data split to a tensor:
+train_dataset = f.convert_to_tensors(tokenized_dataset, 'train')
+val_dataset = f.convert_to_tensors(tokenized_dataset, 'validation')
+test_dataset = f.convert_to_tensors(tokenized_dataset, 'test')
 
-def tokenize_dataset(examples):
-    return tokenizer(examples["text"], padding="max_length",
-                     truncation=True, max_length=36)
+batch_size = 16  # larger batch sizes utilize more RAM/VRAM
 
+# Define the DataLoaders:
+train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size)
+val_dataloader = DataLoader(val_dataset, shuffle=False, batch_size=batch_size)
+test_dataloader = DataLoader(test_dataset, shuffle=False, batch_size=batch_size)
 
-tokenized_dataset = filtered_dataset.map(tokenize_dataset)
+for param in model.base_model.parameters():  # freeze the base model parameters
+    param.requires_grad = False
 
-# Preparing datasets
-train_features = tokenized_dataset["train"].remove_columns(["text", "label"]).with_format("tensorflow")
-val_features = tokenized_dataset["validation"].remove_columns(["text", "label"]).with_format("tensorflow")
-test_features = tokenized_dataset["test"].remove_columns(["text", "label"]).with_format("tensorflow")
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)  # use the 'Adam' optimizer
+scheduler = LambdaLR(optimizer, lr_lambda=f.lr_decay)  # define the learning rate scheduler
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model.to(device)  # pass the model to the selected device
 
-train_features = {x: train_features[x] for x in tokenizer.model_input_names}
-val_features = {x: val_features[x] for x in tokenizer.model_input_names}
-test_features = {x: test_features[x] for x in tokenizer.model_input_names}
+# Initialize loss and accuracy histories:
+train_loss_history = []
+val_loss_history = []
+test_loss_history = []
+train_accuracy_history = []
+val_accuracy_history = []
+test_accuracy_history = []
 
-train_labels = tf.keras.utils.to_categorical(tokenized_dataset["train"]["label"])
-val_labels = tf.keras.utils.to_categorical(tokenized_dataset["validation"]["label"])
-test_labels = tf.keras.utils.to_categorical(tokenized_dataset["test"]["label"])
+epochs = 150
+for epoch in range(epochs):
+    model.train()  # set the model to training mode
+    total_loss = 0
+    correct_predictions = 0
+    total_predictions = 0
+    for batch in train_dataloader:
+        b_input_ids, b_input_mask, b_labels = [x.to(device) for x in batch]
+        model.zero_grad()  # zero-out the model gradients
+        outputs = model(input_ids=b_input_ids, attention_mask=b_input_mask, labels=b_labels)  # get the model outputs
 
-train_dataset = Dataset.from_tensor_slices((train_features, train_labels)).shuffle(len(train_features), seed=2).batch(8)
-val_dataset = Dataset.from_tensor_slices((val_features, val_labels)).shuffle(len(train_features), seed=2).batch(8)
-test_dataset = Dataset.from_tensor_slices((test_features, test_labels)).shuffle(len(train_features), seed=2).batch(8)
+        # Accumulate and backpropagate the loss:
+        loss = outputs.loss
+        total_loss += loss.item()
+        loss.backward()
 
-model.layers[0].trainable = False
-model.summary()
+        optimizer.step()  # step the optimizer
+        logits = outputs.logits
+        predictions = torch.argmax(logits, dim=-1)
+        correct_predictions += (predictions == b_labels).sum().item()  # accumulate correct predictions
+        total_predictions += b_labels.size(0)  # accumulate total predictions
+    scheduler.step()  # step the scheduler
 
+    # Calculate the average training and accuracy losses and append them to their respective histories:
+    avg_train_loss = total_loss / len(train_dataloader)
+    train_loss_history.append(avg_train_loss)
+    train_accuracy = correct_predictions / total_predictions
+    train_accuracy_history.append(train_accuracy)
 
-def lr_decay(epoch, lr):
-    if epoch < 10:
-        return lr
-    else:
-        return lr * np.exp(-0.1 * epoch)
+    # Evaluate on the test and validation sets:
+    avg_val_loss, val_accuracy = evaluate(model, val_dataloader, device)
+    val_loss_history.append(avg_val_loss)
+    val_accuracy_history.append(val_accuracy)
+    avg_test_loss, test_accuracy = evaluate(model, test_dataloader, device)
+    test_loss_history.append(avg_test_loss)
+    test_accuracy_history.append(test_accuracy)
 
+    print(f"\nEpoch {epoch + 1}/{epochs}")
+    print(f"Train loss: {avg_train_loss:.4f}")
+    print(f"Validation loss: {avg_val_loss:.4f}")
+    print(f"Test loss: {avg_test_loss:.4f}")
+    print("==========================================")
+    print(f"Train accuracy: {train_accuracy:.4f}")
+    print(f"Validation accuracy: {val_accuracy:.4f}")
+    print(f"Test accuracy: {test_accuracy:.4f}")
 
-lr_scheduler = tf.keras.callbacks.LearningRateScheduler(schedule=lr_decay, verbose=1)
+test_batch = next(iter(test_dataloader))  # get a batch from the test dataloader
+test_input_ids, test_input_mask, _ = [x.to(device) for x in test_batch]
+sample_logits = model(test_input_ids, attention_mask=test_input_mask).logits  # the sample logits
+sample_predictions = logits_to_class_names(sample_logits)  # the sample predictions
 
-model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
-              loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True),
-              metrics=tf.keras.metrics.CategoricalAccuracy())
-
-history = model.fit(train_dataset, validation_data=val_dataset,
-                    epochs=15, callbacks=[lr_scheduler])
-
-model.evaluate(test_dataset)
-
-predictions = model.predict(test_features)
-
-
-def logits_to_class_names(predictions):
-    predictions = tf.nn.softmax(predictions.logits)
-    predictions = tf.argmax(predictions, axis=1).numpy()
-    predictions = [category_names[prediction] for prediction in predictions]
-    return predictions
-
-
-test_batch = next(iter(test_dataset))[0]
-sample_predictions = logits_to_class_names(model(test_batch))
-
-for i in range(len(test_batch["input_ids"])):
-    print(f"Tweet: {tokenizer.decode(test_batch['input_ids'][i])}")
+for i in range(len(test_input_ids)):
+    print(f"Tweet: {tokenizer.decode(test_input_ids[i], skip_special_tokens=True)}")
     print(f"Predicted class: {sample_predictions[i]}\n")
 
-
-def plot_training_results(history):
-    plt.figure(figsize=(12, 5))
-
-    # loss
-    plt.subplot(1, 2, 1)
-    plt.plot(history.history['loss'], label='Train Loss')
-    plt.plot(history.history['val_loss'], label='Validation Loss')
-    plt.xlabel('Epochs')
-    plt.ylabel('Loss')
-    plt.title('Loss Over Epochs')
-    plt.legend()
-
-    # accuracy
-    plt.subplot(1, 2, 2)
-    plt.plot(history.history['categorical_accuracy'], label='Train Accuracy')
-    plt.plot(history.history['val_categorical_accuracy'], label='Validation Accuracy')
-    plt.xlabel('Epochs')
-    plt.ylabel('Accuracy')
-    plt.title('Accuracy Over Epochs')
-    plt.legend()
-
-    # output plot
-    plt.tight_layout()
-    plt.show()
-
-
-plot_training_results(history)
+f.plot_training_results(train_loss_history, val_loss_history, test_loss_history, train_accuracy_history,
+                        val_accuracy_history, test_accuracy_history)
